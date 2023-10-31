@@ -13,7 +13,7 @@ module uart_receive
     output logic finished_read);
 
     logic [3:0] data_bits; // keep track of how many data bits we have sent
-    logic [BAUD_TICK_WIDTH+1:0] clock_ticks; // oversampling ticks
+    logic [BAUD_TICK_WIDTH-1:0] clock_ticks; // oversampling ticks
     logic [7:0] tempdata; // temporary data storage to form our data output
     logic data_count_enable; // enable signal to count how many data bits we have read
     logic data_count_load; // load signal to reset how many data bits we have read
@@ -59,9 +59,9 @@ module uart_receive
     // nextState logic 
     always_comb begin
         unique case (state)
-            WAITING : nextState = (rx == 0 && clock_ticks == HALF_BAUD_TICK) ? READING : WAITING;
-            READING : nextState = (data_bits == 3'h7 && clock_ticks == BAUD_TICK) ? STOP : READING;
-            STOP : nextState = (rx == 1 && clock_ticks == BAUD_TICK) ? WAITING : STOP;
+            WAITING : nextState = (rx == 0 && {20'd0, clock_ticks} == HALF_BAUD_TICK) ? READING : WAITING;
+            READING : nextState = (data_bits == 4'h7 && {20'd0, clock_ticks} == BAUD_TICK) ? STOP : READING;
+            STOP : nextState = (rx == 1 && {20'd0, clock_ticks} == BAUD_TICK) ? WAITING : STOP;
             default: nextState = WAITING;
         endcase
     end
@@ -74,7 +74,7 @@ module uart_receive
         case (state) 
             WAITING : 
                 begin
-                    if (rx == 0 && clock_ticks == HALF_BAUD_TICK) begin
+                    if (rx == 0 && {20'd0, clock_ticks} == HALF_BAUD_TICK) begin
                         clk_count_load = 1'b1;
                     end
                     else if (rx == 0) begin
@@ -88,7 +88,7 @@ module uart_receive
                 end
             READING : 
                 begin
-                    if (clock_ticks == BAUD_TICK) begin
+                    if ({20'd0, clock_ticks} == BAUD_TICK) begin
                         clk_count_load = 1'b1;
                         data_count_enable = 1'b1;
                         sipo_enable = 1'b1;
@@ -99,7 +99,7 @@ module uart_receive
                 end
             STOP :
                 begin
-                    if (rx == 1 && clock_ticks == BAUD_TICK) begin
+                    if (rx == 1 && {20'd0, clock_ticks} == BAUD_TICK) begin
                         clk_count_load = 1'b1;
                         finished_read = 1'b1;
                         data_count_load = 1'b1;
