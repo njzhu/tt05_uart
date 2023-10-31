@@ -98,11 +98,11 @@ AKLOG=/usr/bin/aklog
 0
 2
 1698792708 TB.sv
-1698792663 uart.sv
+1698793824 uart.sv
 4
 1654054205 /afs/ece.cmu.edu/support/synopsys/synopsys.release/T-Foundation/vcs/T-2022.06/linux64/lib/libvirsim.so
 1654053585 /afs/ece.cmu.edu/support/synopsys/synopsys.release/T-Foundation/vcs/T-2022.06/linux64/lib/liberrorinf.so
 1654053489 /afs/ece.cmu.edu/support/synopsys/synopsys.release/T-Foundation/vcs/T-2022.06/linux64/lib/libsnpsmalloc.so
 1654053565 /afs/ece.cmu.edu/support/synopsys/synopsys.release/T-Foundation/vcs/T-2022.06/linux64/lib/libvfs.so
-1698792711 simv.daidir
+1698793827 simv.daidir
 -1 partitionlib

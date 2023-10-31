@@ -12,8 +12,8 @@ module uart_receive
     output logic [7:0] dataOut,
     output logic finished_read);
 
-    logic [2:0] data_bits; // keep track of how many data bits we have sent
-    logic [BAUD_TICK_WIDTH:0] clock_ticks; // oversampling ticks
+    logic [3:0] data_bits; // keep track of how many data bits we have sent
+    logic [BAUD_TICK_WIDTH+1:0] clock_ticks; // oversampling ticks
     logic [7:0] tempdata; // temporary data storage to form our data output
     logic data_count_enable; // enable signal to count how many data bits we have read
     logic data_count_load; // load signal to reset how many data bits we have read
