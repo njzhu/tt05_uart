@@ -11,8 +11,6 @@ module tt_um_njzhu_uart (
     input  logic       rst_n     // reset_n - low to reset
 );
     logic finished_read;
-    
-    assign ui_in[7:1] = 'd0; 
 
     // use bidirectionals as outputs
     assign uio_oe = 8'b11111111;
