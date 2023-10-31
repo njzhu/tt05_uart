@@ -43,84 +43,83 @@ module TB;
 
     rx <= 1'b0;
     for (int i = 0; i < 5208; i++) begin // SEND THE START BIT
-        $display($time, " finished_read: %h dataOut: %b tempData: %b %d", 
-                        finished_read, dataOut, dut.tempdata, dut.state); 
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
     for (int i = 0; i < 5208; i++) begin // 1 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
-    rx <= 1'b0;
+    rx <= 1'b1;
     for (int i = 0; i < 5208; i++) begin // 2 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
     for (int i = 0; i < 5208; i++) begin // 3 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
-    rx <= 1'b0;
+    rx <= 1'b1;
     for (int i = 0; i < 5208; i++) begin // 4 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
-    rx <= 1'b1;
+    rx <= 1'b0;
     for (int i = 0; i < 5208; i++) begin // 5 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
     for (int i = 0; i < 5208; i++) begin // 6 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
-    rx <= 1'b1;
+    rx <= 1'b0;
     for (int i = 0; i < 5208; i++) begin // 7 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
     for (int i = 0; i < 5208; i++) begin // 8 DATA BIT
       @(posedge clock);
     end
 
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
     for (int i = 0; i < 5208; i++) begin // SEND STOP BIT
       @(posedge clock);
     end
-    $display($time, " finished_read: %h dataOut: %b tempData: %b", 
-                        finished_read, dataOut, dut.tempdata);
+    @(posedge clock);
+    // $display($time, " finished_read: %h dataOut: %b tempData: %b", 
+    //                     finished_read, dataOut, dut.tempdata);
     $finish;
   end
 

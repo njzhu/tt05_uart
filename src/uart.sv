@@ -19,6 +19,8 @@ module uart_receive
     logic data_count_load; // load signal to reset how many data bits we have read
     logic clk_count_enable; // enable signal to count how many clock cycles we have read
     logic clk_count_load; // load signal to reset how many clock cycles we have read
+    logic sipo_enable; // enable signal for the SIPO to store the data bits
+    logic sipo_clear; // clear signal for the SIPO to store the data bits
 
     Counter #(4) data_read (.D(4'd0),
                             .en(data_count_enable),
@@ -36,12 +38,12 @@ module uart_receive
                             .up(1'b1),
                             .Q(clock_ticks));   
 
-    ShiftRegister_SIPO #(8) reg (.serial(),
-                                 .en(),
-                                 .left(),
-                                 .load(),
-                                 .clock(),
-                                 .Q());                         
+    ShiftRegister_SIPO #(8) reg_read (.serial(rx),
+                                 .en(sipo_enable),
+                                 .left(1'b0),
+                                 .clear(sipo_clear),
+                                 .clock(clock),
+                                 .Q(tempdata));                         
 
     // defining our states
     enum logic [2:0] {WAITING=3'd1, READING=3'd2, STOP=3'd3} state, nextState;
@@ -59,7 +61,7 @@ module uart_receive
         unique case (state)
             WAITING : nextState = (rx == 0 && clock_ticks == HALF_BAUD_TICK) ? READING : WAITING;
             READING : nextState = (data_bits == 3'h7 && clock_ticks == BAUD_TICK) ? STOP : READING;
-            STOP : nextState = (rx == 1 && clock_ticks == HALF_BAUD_TICK) ? WAITING : STOP;
+            STOP : nextState = (rx == 1 && clock_ticks == BAUD_TICK) ? WAITING : STOP;
             default: nextState = WAITING;
         endcase
     end
@@ -67,7 +69,8 @@ module uart_receive
     // output logic
     always_comb begin
         finished_read = 1'b0; data_count_load = 1'b0; data_count_enable = 1'b0;
-        clk_count_enable = 1'b0; clk_count_load = 1'b0;
+        clk_count_enable = 1'b0; clk_count_load = 1'b0; sipo_enable = 1'b0;
+        sipo_clear = 1'b0;
         case (state) 
             WAITING : 
                 begin
@@ -78,7 +81,7 @@ module uart_receive
                         clk_count_enable = 1'b1; 
                     end
                     else begin
-                        tempdata = 8'd0;
+                        sipo_clear = 1'b1;
                         data_count_load = 1'b1;
                         clk_count_load = 1'b1;
                     end
@@ -88,7 +91,7 @@ module uart_receive
                     if (clock_ticks == BAUD_TICK) begin
                         clk_count_load = 1'b1;
                         data_count_enable = 1'b1;
-                        tempdata = {rx, tempdata[7:1]};
+                        sipo_enable = 1'b1;
                     end
                     else begin
                         clk_count_enable = 1'b1; 
@@ -98,7 +101,7 @@ module uart_receive
                 begin
                     if (rx == 1 && clock_ticks == BAUD_TICK) begin
                         clk_count_load = 1'b1;
-                        finished_read = 1;
+                        finished_read = 1'b1;
                         data_count_load = 1'b1;
                     end
                     else begin
@@ -106,9 +109,9 @@ module uart_receive
                     end
                 end
         endcase
-
         assign dataOut = tempdata;
     end
+
 
 endmodule : uart_receive
 
@@ -138,14 +141,16 @@ endmodule : Counter
 module ShiftRegister_SIPO
     #(parameter WIDTH=8)
     (input logic serial,
-     input logic en, left, load, clock,
+     input logic en, left, clear, clock,
      output logic [WIDTH-1:0] Q);
 
     always_ff @(posedge clock)
-        if (en)
-            if (left)
-                Q <= {Q[WIDTH-2:0], serial};
-            else
-                Q <= {serial, Q[WIDTH-1:1]};
+    if (clear) 
+        Q <= {WIDTH {1'b0}};
+    else if (en)
+        if (left)
+            Q <= {Q[WIDTH-2:0], serial};
+        else
+            Q <= {serial, Q[WIDTH-1:1]};
 
 endmodule : ShiftRegister_SIPO
