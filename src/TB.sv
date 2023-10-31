@@ -4,7 +4,7 @@ module TB;
 
   logic [7:0] dataOut;
   
-  uart_receive #(49_996_800, 9600) dut (.rx(rx),
+  uart_receive #(4_992_000, 9600) dut (.rx(rx),
                         .clock(clock),
                         .reset_n(resetN),
                         .dataOut(dataOut),
@@ -42,7 +42,7 @@ module TB;
     @(posedge clock);
 
     rx <= 1'b0;
-    for (int i = 0; i < 5208; i++) begin // SEND THE START BIT
+    for (int i = 0; i < 520; i++) begin // SEND THE START BIT
       @(posedge clock);
     end
 
@@ -50,7 +50,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
-    for (int i = 0; i < 5208; i++) begin // 1 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 1 DATA BIT
       @(posedge clock);
     end
 
@@ -58,7 +58,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
-    for (int i = 0; i < 5208; i++) begin // 2 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 2 DATA BIT
       @(posedge clock);
     end
 
@@ -66,7 +66,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
-    for (int i = 0; i < 5208; i++) begin // 3 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 3 DATA BIT
       @(posedge clock);
     end
 
@@ -74,7 +74,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
-    for (int i = 0; i < 5208; i++) begin // 4 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 4 DATA BIT
       @(posedge clock);
     end
 
@@ -82,7 +82,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
-    for (int i = 0; i < 5208; i++) begin // 5 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 5 DATA BIT
       @(posedge clock);
     end
 
@@ -90,7 +90,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
-    for (int i = 0; i < 5208; i++) begin // 6 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 6 DATA BIT
       @(posedge clock);
     end
 
@@ -98,7 +98,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
-    for (int i = 0; i < 5208; i++) begin // 7 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 7 DATA BIT
       @(posedge clock);
     end
 
@@ -106,7 +106,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b0;
-    for (int i = 0; i < 5208; i++) begin // 8 DATA BIT
+    for (int i = 0; i < 520; i++) begin // 8 DATA BIT
       @(posedge clock);
     end
 
@@ -114,7 +114,7 @@ module TB;
     //                     finished_read, dataOut, dut.tempdata);
 
     rx <= 1'b1;
-    for (int i = 0; i < 5208; i++) begin // SEND STOP BIT
+    for (int i = 0; i < 520; i++) begin // SEND STOP BIT
       @(posedge clock);
     end
     @(posedge clock);

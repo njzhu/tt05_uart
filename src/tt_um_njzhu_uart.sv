@@ -21,7 +21,7 @@ module tt_um_njzhu_uart (
 
     assign uio_out[7:1] = 'd0;
 
-    uart_receive #(50_000_000, 9600) uart_rx (.rx(ui_in[0]), 
+    uart_receive #(5_000_000, 9600) uart_rx (.rx(ui_in[0]), 
                                               .clock(clk),
                                               .reset_n(rst_n),
                                               .dataOut(uo_out),

@@ -1,7 +1,7 @@
 `default_nettype none
 
 module uart_receive
-    #(parameter CLK_SPEED = 50_000_000,
+    #(parameter CLK_SPEED = 5_000_000,
                 BAUD_RATE = 9600,
                 
                 localparam 
@@ -109,8 +109,9 @@ module uart_receive
                     end
                 end
         endcase
-        assign dataOut = tempdata;
     end
+
+    assign dataOut = tempdata;
 
 
 endmodule : uart_receive
