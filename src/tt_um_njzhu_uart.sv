@@ -10,19 +10,52 @@ module tt_um_njzhu_uart (
     input  logic       clk,      // clock
     input  logic       rst_n     // reset_n - low to reset
 );
-    logic finished_read;
+    logic finished_read, rx, dataReady, tx;
 
-    // use bidirectionals as outputs
-    assign uio_oe = 8'b11111111;
+    logic [7:0] dataOut, dataIn;
 
-    assign uio_out[0] = finished_read;
+    always_comb begin
+        if (ui_in[7]) begin // rx
 
-    assign uio_out[7:1] = 'd0;
+            // use bidirectionals as outputs
+            uio_oe = 8'b1111_1111;
 
-    uart_receive #(5_000_000, 9600) uart_rx (.rx(ui_in[0]), 
+            uio_out[0] = finished_read;
+
+            uio_out[7:1] = 'd0;
+
+            rx = ui_in[0];
+
+            dataOut = uo_out;
+        end
+        else begin
+
+            // use bidirectionals as inputs
+            uio_oe = 8'b0000_0000;
+
+            dataIn = uio_in;
+
+            dataReady = ui_in[0];
+
+            tx = uo_out[0];
+
+            uo_out[7:1] = 'd0;
+        end
+    end
+
+
+    // 
+
+    uart_receive #(5_000_000, 9600) uart_rx (.rx(rx), 
                                               .clock(clk),
                                               .reset_n(rst_n),
-                                              .dataOut(uo_out),
+                                              .dataOut(dataOut),
                                               .finished_read(finished_read));
+
+    uart_transmit #(5_000_000, 9600) uart_tx (.clock(clk), 
+                                              .reset_n(rst_n), 
+                                              .dataReady(dataReady),
+                                              .dataIn(dataIn),
+                                              .tx(tx));                                              
 
 endmodule : tt_um_njzhu_uart

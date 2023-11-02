@@ -11,6 +11,12 @@
         "module",
         4
     ],
+    "uart_receive": [
+        "uart_receive",
+        "VR2TE",
+        "module",
+        5
+    ],
     "...MASTER...": [
         "SIM",
         "amcQw",

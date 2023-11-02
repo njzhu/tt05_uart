@@ -116,6 +116,121 @@ module uart_receive
 
 endmodule : uart_receive
 
+module uart_transmit
+    #(parameter CLK_SPEED = 5_000_000,
+                BAUD_RATE = 9600,
+                
+                localparam 
+                BAUD_TICK = CLK_SPEED / BAUD_RATE,
+                HALF_BAUD_TICK = BAUD_TICK / 2,
+                BAUD_TICK_WIDTH = $clog2(BAUD_TICK))
+    (input logic clock, reset_n, dataReady,
+     input logic [7:0] dataIn,
+     output logic tx);
+
+    logic [3:0] data_bits; // keep track of how many data bits we have sent
+    logic [BAUD_TICK_WIDTH-1:0] clock_ticks; // oversampling ticks
+    logic tempSend; // temporary data storage to form our data output
+    logic data_count_enable; // enable signal to count how many data bits we have read
+    logic data_count_load; // load signal to reset how many data bits we have read
+    logic clk_count_enable; // enable signal to count how many clock cycles we have read
+    logic clk_count_load; // load signal to reset how many clock cycles we have read
+
+    Counter #(4) data_read (.D(4'd0),
+                            .en(data_count_enable),
+                            .clear(1'b0),
+                            .load(data_count_load),
+                            .clock(clock),
+                            .up(1'b1),
+                            .Q(data_bits));
+
+    Counter #(BAUD_TICK_WIDTH) clk_read (.D('d0),
+                            .en(clk_count_enable),
+                            .clear(1'b0),
+                            .load(clk_count_load),
+                            .clock(clock),
+                            .up(1'b1),
+                            .Q(clock_ticks));                        
+
+    // defining our states
+    enum logic [2:0] {WAITING=3'd1, SENDING=3'd2, STOP=3'd3} state, nextState;
+
+    // FF logic to actually perform the state changes
+    always_ff @(posedge clock, negedge reset_n) begin
+        if (~reset_n) begin
+            state <= WAITING;
+        end
+        else state <= nextState;
+    end
+
+    // nextState logic 
+    always_comb begin
+        unique case (state)
+            WAITING : nextState = (dataReady && {20'd0, clock_ticks} == BAUD_TICK) ? SENDING : WAITING;
+            SENDING : nextState = (data_bits == 4'h7 && {20'd0, clock_ticks} == BAUD_TICK) ? STOP : SENDING;
+            STOP : nextState = ({20'd0, clock_ticks} == BAUD_TICK) ? WAITING : STOP;
+            default: nextState = WAITING;
+        endcase
+    end
+
+    // output logic
+    always_comb begin
+        data_count_load = 1'b0; data_count_enable = 1'b0;
+        clk_count_enable = 1'b0; clk_count_load = 1'b0;
+        case (state) 
+            WAITING : // set the counter to 0 so the first iter of SENDING can send the start bit
+                begin
+                    if (dataReady && {20'd0, clock_ticks} == BAUD_TICK) begin
+                        clk_count_load = 1'b1;
+                        tempSend = 0;
+                        data_count_load = 1'b1;
+                    end
+                    else if (dataReady) begin
+                        clk_count_enable = 1'b1;
+                        tempSend = 0;
+                    end
+                    else begin
+                        data_count_load = 1'b1;
+                        clk_count_load = 1'b1;
+                        tempSend = 1;
+                    end
+                end
+            SENDING : // send the start bit and 8 data bits
+                begin
+                    if (data_bits == 4'h7 && {20'd0, clock_ticks} == BAUD_TICK) begin
+                        clk_count_load = 1'b1;
+                        tempSend = dataIn[data_bits];
+                    end
+                    else if ({20'd0, clock_ticks} == BAUD_TICK) begin
+                        clk_count_load = 1'b1;
+                        data_count_enable = 1'b1;
+                        tempSend = dataIn[data_bits];
+                    end
+                    else begin
+                        clk_count_enable = 1'b1; 
+                        tempSend = dataIn[data_bits];
+                    end
+                end
+            STOP :
+                begin
+                    if ({20'd0, clock_ticks} == BAUD_TICK) begin
+                        clk_count_load = 1'b1;
+                        data_count_load = 1'b1;
+                        tempSend = 1;
+                    end
+                    else begin
+                        clk_count_enable = 1'b1;
+                        tempSend = 1;
+                    end
+                end
+        endcase
+    end
+
+    assign tx = tempSend;
+
+
+endmodule : uart_transmit
+
 // A binary up-down counter.
 // Clear has priority over Load, which has priority over Enable
 module Counter
