@@ -122,7 +122,6 @@ module uart_transmit
                 
                 localparam 
                 BAUD_TICK = CLK_SPEED / BAUD_RATE,
-                HALF_BAUD_TICK = BAUD_TICK / 2,
                 BAUD_TICK_WIDTH = $clog2(BAUD_TICK))
     (input logic clock, reset_n, dataReady,
      input logic [7:0] dataIn,
