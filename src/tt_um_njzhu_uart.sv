@@ -30,7 +30,7 @@ module tt_um_njzhu_uart (
 
             dataIn = 8'd0;
 
-            dataReady = 8'd0;
+            dataReady = 1'd0;
         end
         else begin
 
