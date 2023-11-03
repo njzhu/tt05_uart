@@ -128,7 +128,7 @@ module uart_transmit
      input logic [7:0] dataIn,
      output logic tx);
 
-    logic [3:0] data_bits; // keep track of how many data bits we have sent
+    logic [2:0] data_bits; // keep track of how many data bits we have sent
     logic [BAUD_TICK_WIDTH-1:0] clock_ticks; // oversampling ticks
     logic tempSend; // temporary data storage to form our data output
     logic data_count_enable; // enable signal to count how many data bits we have read
@@ -136,7 +136,7 @@ module uart_transmit
     logic clk_count_enable; // enable signal to count how many clock cycles we have read
     logic clk_count_load; // load signal to reset how many clock cycles we have read
 
-    Counter #(4) data_read (.D(4'd0),
+    Counter #(3) data_read (.D(3'd0),
                             .en(data_count_enable),
                             .clear(1'b0),
                             .load(data_count_load),
@@ -167,7 +167,7 @@ module uart_transmit
     always_comb begin
         unique case (state)
             WAITING : nextState = (dataReady && {20'd0, clock_ticks} == BAUD_TICK) ? SENDING : WAITING;
-            SENDING : nextState = (data_bits == 4'h7 && {20'd0, clock_ticks} == BAUD_TICK) ? STOP : SENDING;
+            SENDING : nextState = (data_bits == 3'h7 && {20'd0, clock_ticks} == BAUD_TICK) ? STOP : SENDING;
             STOP : nextState = ({20'd0, clock_ticks} == BAUD_TICK) ? WAITING : STOP;
             default: nextState = WAITING;
         endcase
@@ -197,7 +197,7 @@ module uart_transmit
                 end
             SENDING : // send the start bit and 8 data bits
                 begin
-                    if (data_bits == 4'h7 && {20'd0, clock_ticks} == BAUD_TICK) begin
+                    if (data_bits == 3'h7 && {20'd0, clock_ticks} == BAUD_TICK) begin
                         clk_count_load = 1'b1;
                         tempSend = dataIn[data_bits];
                     end
