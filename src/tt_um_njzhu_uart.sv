@@ -27,6 +27,10 @@ module tt_um_njzhu_uart (
             rx = ui_in[0];
 
             uo_out = dataOut;
+
+            dataIn = 8'd0;
+
+            dataReady = 8'd0;
         end
         else begin
 
@@ -38,6 +42,12 @@ module tt_um_njzhu_uart (
             dataReady = ui_in[0];
 
             uo_out[0] = tx;
+
+            uo_out[7:1] = 'd0;
+
+            uio_out = 'd0;
+
+            rx = 1'b0;
 
         end
     end
