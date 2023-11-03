@@ -175,7 +175,7 @@ module uart_transmit
     // output logic
     always_comb begin
         data_count_load = 1'b0; data_count_enable = 1'b0;
-        clk_count_enable = 1'b0; clk_count_load = 1'b0;
+        clk_count_enable = 1'b0; clk_count_load = 1'b0; tempSend = 1'd1;
         case (state) 
             WAITING : // set the counter to 0 so the first iter of SENDING can send the start bit
                 begin
